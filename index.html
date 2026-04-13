@@ -107,6 +107,30 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .log-meta{color:var(--text3);font-family:'DM Mono',monospace;font-size:10px;margin-bottom:3px}.log-text{color:var(--text2)}
 .toast{position:fixed;bottom:24px;right:24px;z-index:300;background:var(--bg4);border:1px solid var(--border2);border-radius:var(--radius);padding:10px 16px;font-size:13px;color:var(--text2);transform:translateY(80px);opacity:0;transition:all .25s;pointer-events:none}
 .toast.show{transform:translateY(0);opacity:1}.toast.success{border-color:var(--hot);color:var(--hot)}.toast.error{border-color:var(--red);color:var(--red)}
+
+.agenda-modal-body{display:flex;flex-direction:column;gap:8px}
+.agenda-section-lbl{font-size:10px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin:8px 0 4px}
+.agenda-item-row{display:flex;align-items:center;gap:10px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;transition:all .15s}
+.agenda-item-row.confirmed{border-color:rgba(29,158,117,.4);background:rgba(29,158,117,.07)}
+.agenda-item-row.treated{opacity:.5;text-decoration:line-through}
+.agenda-check{width:18px;height:18px;border-radius:4px;border:1.5px solid var(--border2);background:transparent;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.agenda-check.checked{background:var(--hot);border-color:var(--hot)}
+.agenda-check svg{width:10px;height:10px;color:#fff;display:none}
+.agenda-check.checked svg{display:block}
+.agenda-item-text{flex:1;font-size:12px;color:var(--text);line-height:1.4}
+.agenda-item-meta{font-size:10px;color:var(--text3);white-space:nowrap}
+.agenda-suggest-btn{font-size:10px;padding:2px 8px;border-radius:20px;border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer}
+.agenda-suggest-btn:hover{background:rgba(29,158,117,.1);border-color:var(--hot);color:var(--hot)}
+.agenda-add-row{display:flex;gap:6px;margin-top:4px}
+.agenda-add-input{flex:1;font-size:12px;padding:6px 10px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:var(--bg3);color:var(--text);outline:none}
+.agenda-add-input:focus{border-color:var(--teal)}
+.session-info{display:flex;align-items:center;justify-content:space-between;background:var(--bg4);border-radius:var(--radius-sm);padding:8px 12px;margin-bottom:8px}
+.session-info-left{font-size:12px;color:var(--text2)}
+.session-info-num{font-size:14px;font-weight:600;color:var(--teal);font-family:'DM Mono',monospace}
+.next-session{font-size:11px;color:var(--text3)}
+.progress-bar{height:3px;background:var(--bg4);border-radius:2px;overflow:hidden;margin-bottom:12px}
+.progress-fill{height:100%;background:var(--hot);border-radius:2px;transition:width .3s}
+
 @media(max-width:900px){.board{grid-template-columns:1fr}.agenda-item{grid-template-columns:36px 60px 1fr}.ag-resp,.ag-pres{display:none}.form-grid{grid-template-columns:1fr}}
 </style>
 </head>
@@ -117,12 +141,13 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <div class="logo"><div class="logo-dot"></div>SOLU</div>
     <div class="divider"></div>
     <span style="font-size:13px;color:var(--text2)">Process Board</span>
-    <span class="session-chip">Sesión #1 · 13 abr 2025</span>
+    <span class="session-chip" id="session-chip-display">Sesión #1 · 13 abr 2025</span>
   </div>
   <div class="topbar-right">
     <span style="font-size:11px;color:var(--text3);display:flex;align-items:center;gap:4px"><span class="sync-dot" id="sync-dot"></span><span id="sync-label">Local</span></span>
     <button class="btn btn-ghost" onclick="openSessionLog()"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="8" r="7"/><path d="M8 5v3l2 2"/></svg>Historial</button>
     <button class="btn btn-ghost" onclick="exportCSV()"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 12h10M8 2v8M5 8l3 3 3-3"/></svg>Exportar</button>
+    <button class="btn btn-teal" onclick="openAgendaModal()" id="btn-agenda"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="2" y="2" width="12" height="12" rx="2"/><path d="M5 6h6M5 9h4"/></svg><span id="agenda-btn-label">Agenda #1</span></button>
     <button class="btn btn-primary" onclick="openAdd()"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3v10M3 8h10"/></svg>Nuevo issue</button>
   </div>
 </header>
@@ -191,6 +216,49 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 </div>
 </div>
 
+
+<!-- agenda modal -->
+<div class="modal-overlay" id="agenda-modal">
+<div class="modal" style="max-width:500px">
+  <div class="modal-title">
+    <div style="display:flex;flex-direction:column;gap:2px">
+      <span id="agenda-modal-title">Agenda — Sesión #1</span>
+      <span style="font-size:11px;color:var(--text3);font-weight:400" id="agenda-modal-date">13 abr 2025 · 30 min · 3 temas</span>
+    </div>
+    <button class="modal-close" onclick="closeModal('agenda-modal')">x</button>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="agenda-progress" style="width:0%"></div></div>
+  <div class="session-info">
+    <div>
+      <div class="session-info-left">Sesión actual</div>
+      <div class="session-info-num" id="agenda-session-num">#1</div>
+    </div>
+    <div style="text-align:right">
+      <div class="next-session">Próxima sesión estimada</div>
+      <div style="font-size:12px;color:var(--text2);font-family:'DM Mono',monospace" id="agenda-next-date">—</div>
+    </div>
+  </div>
+  <div class="agenda-modal-body" id="agenda-modal-body"></div>
+  <div style="margin-top:12px">
+    <div class="agenda-section-lbl">Agregar tema libre</div>
+    <div class="agenda-add-row">
+      <input class="agenda-add-input" id="agenda-free-input" placeholder="Ej: Revisión de rates con Iván...">
+      <button class="btn btn-ghost" style="font-size:12px;padding:6px 12px" onclick="addFreeAgendaItem()">+ Agregar</button>
+    </div>
+  </div>
+  <div class="modal-footer" style="justify-content:space-between">
+    <button class="btn btn-ghost" onclick="refreshAgendaSuggestions()" style="font-size:12px">
+      <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M13 8A5 5 0 1 1 8 3M13 3v5h-5"/></svg>
+      Regenerar sugerencias
+    </button>
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-ghost" onclick="closeModal('agenda-modal')">Cerrar</button>
+      <button class="btn btn-teal" onclick="saveAgendaToSheet()">Guardar agenda</button>
+    </div>
+  </div>
+</div>
+</div>
+
 <!-- log modal -->
 <div class="modal-overlay" id="log-modal">
 <div class="modal"><div class="modal-title"><span>Historial de actividad</span><button class="modal-close" onclick="closeModal('log-modal')">x</button></div><div id="log-body" style="max-height:400px;overflow-y:auto"></div></div>
@@ -232,6 +300,185 @@ function loadTeamFromSheets(){if(!ASURL)return;apiFetch({action:"getTeam"},funct
 (function(){try{var t=localStorage.getItem("solu_team");if(t)TEAM=JSON.parse(t);}catch(e){}})();
 function buildOwnerField(){var sel='<select class="form-select" id="f-owner" style="margin-bottom:4px"><option value="">-- Seleccionar --</option>'+TEAM.map(function(m){return'<option value="'+m+'">'+m+'</option>';}).join('')+'</select><input class="form-input" id="f-owner-custom" placeholder="O escribir nombre manualmente..." style="font-size:11px;padding:5px 8px" oninput="syncOwner(this.value)">';return sel;}
 function syncOwner(v){try{document.getElementById('f-owner').value=v;}catch(e){}}
+
+
+var SESSION_NUM = 1;
+var SESSION_DATE = "13/04/2025";
+var CONFIRMED_AGENDA = [];
+
+function loadSession(){
+  try{
+    var sn = localStorage.getItem("solu_session_num");
+    var sd = localStorage.getItem("solu_session_date");
+    var ca = localStorage.getItem("solu_confirmed_agenda");
+    if(sn) SESSION_NUM = parseInt(sn);
+    if(sd) SESSION_DATE = sd;
+    if(ca) CONFIRMED_AGENDA = JSON.parse(ca);
+  }catch(e){}
+  updateSessionDisplay();
+}
+
+function saveSession(){
+  try{
+    localStorage.setItem("solu_session_num", SESSION_NUM);
+    localStorage.setItem("solu_session_date", SESSION_DATE);
+    localStorage.setItem("solu_confirmed_agenda", JSON.stringify(CONFIRMED_AGENDA));
+  }catch(e){}
+}
+
+function updateSessionDisplay(){
+  var chip = document.getElementById("session-chip-display");
+  var btnLabel = document.getElementById("agenda-btn-label");
+  if(chip) chip.textContent = "Sesión #" + SESSION_NUM + " · " + SESSION_DATE;
+  if(btnLabel) btnLabel.textContent = "Agenda #" + SESSION_NUM;
+}
+
+function getNextSessionDate(currentDate){
+  try{
+    var parts = currentDate.split("/");
+    var d = new Date(parseInt(parts[2]), parseInt(parts[1])-1, parseInt(parts[0]));
+    d.setDate(d.getDate() + 7);
+    return d.toLocaleDateString("es-AR", {day:"2-digit", month:"short", year:"numeric"});
+  }catch(e){ return "—"; }
+}
+
+function buildAgendaSuggestions(){
+  var candidates = ISSUES.filter(function(i){
+    return (i.signal === "Hot" || i.signal === "Ganando fuerza") && i.status !== "Cerrado";
+  });
+  candidates.sort(function(a,b){
+    var sigOrder = {"Hot":0, "Ganando fuerza":1};
+    var sa = sigOrder[a.signal] !== undefined ? sigOrder[a.signal] : 2;
+    var sb = sigOrder[b.signal] !== undefined ? sigOrder[b.signal] : 2;
+    if(sa !== sb) return sa - sb;
+    return (b.mentions||0) - (a.mentions||0);
+  });
+  return candidates.slice(0, 3).map(function(i){
+    return {
+      id: i.id,
+      text: i.title,
+      owner: i.owner,
+      signal: i.signal,
+      source: "issue",
+      treated: false,
+      confirmed: true
+    };
+  });
+}
+
+function openAgendaModal(){
+  if(CONFIRMED_AGENDA.length === 0) CONFIRMED_AGENDA = buildAgendaSuggestions();
+  renderAgendaModal();
+  document.getElementById("agenda-modal").classList.add("open");
+}
+
+function refreshAgendaSuggestions(){
+  CONFIRMED_AGENDA = buildAgendaSuggestions();
+  renderAgendaModal();
+  toast("Sugerencias actualizadas", true);
+}
+
+function renderAgendaModal(){
+  var body = document.getElementById("agenda-modal-body");
+  var total = CONFIRMED_AGENDA.length;
+  var treated = CONFIRMED_AGENDA.filter(function(i){return i.treated;}).length;
+
+  document.getElementById("agenda-session-num").textContent = "#" + SESSION_NUM;
+  document.getElementById("agenda-modal-title").textContent = "Agenda — Sesión #" + SESSION_NUM;
+  document.getElementById("agenda-modal-date").textContent = SESSION_DATE + " · 30 min · " + total + " temas";
+  document.getElementById("agenda-next-date").textContent = getNextSessionDate(SESSION_DATE);
+  document.getElementById("agenda-progress").style.width = (total > 0 ? Math.round((treated/total)*100) : 0) + "%";
+
+  var html2 = '<div class="agenda-section-lbl">Temas confirmados para esta sesión</div>';
+
+  if(CONFIRMED_AGENDA.length === 0){
+    html2 += '<div style="font-size:12px;color:var(--text3);padding:12px;text-align:center">Sin temas. Usá "Regenerar sugerencias" o agregá uno libre.</div>';
+  } else {
+    CONFIRMED_AGENDA.forEach(function(item, idx){
+      var chipColor = item.signal === "Hot" ? "rgba(29,158,117,.15)" : "rgba(239,159,39,.15)";
+      var chipText  = item.signal === "Hot" ? "#1D9E75" : "#EF9F27";
+      var sigLabel  = item.signal === "Hot" ? "Prioridad" : "Escalando";
+      html2 += '<div class="agenda-item-row' + (item.treated ? " treated" : "") + '">'
+        + '<div class="agenda-check' + (item.treated ? " checked" : "") + '" onclick="toggleTreated(' + idx + ')">'
+        + '<svg viewBox="0 0 10 8" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1,4 4,7 9,1"/></svg>'
+        + '</div>'
+        + '<div class="agenda-item-text">'
+        + '<div style="font-size:12px;font-weight:500;color:var(--text)">' + esc(item.text) + '</div>'
+        + (item.owner ? '<div style="font-size:10px;color:var(--text3);margin-top:2px">' + esc(item.owner) + '</div>' : '')
+        + '</div>'
+        + (item.source === "issue" && item.signal ? '<span style="font-size:9px;font-weight:600;padding:2px 7px;border-radius:20px;background:' + chipColor + ';color:' + chipText + '">' + sigLabel + '</span>' : '')
+        + '<button class="agenda-suggest-btn" onclick="removeAgendaItem(' + idx + ')" style="color:var(--red);border-color:rgba(226,75,74,.3)">×</button>'
+        + '</div>';
+    });
+  }
+
+  body.innerHTML = html2;
+}
+
+function toggleTreated(idx){
+  if(!CONFIRMED_AGENDA[idx]) return;
+  CONFIRMED_AGENDA[idx].treated = !CONFIRMED_AGENDA[idx].treated;
+  saveSession();
+  renderAgendaModal();
+  checkAllTreated();
+}
+
+function checkAllTreated(){
+  if(CONFIRMED_AGENDA.length === 0) return;
+  var allDone = CONFIRMED_AGENDA.every(function(i){ return i.treated; });
+  if(allDone){
+    setTimeout(function(){
+      closeSession();
+    }, 600);
+  }
+}
+
+function closeSession(){
+  SESSION_NUM += 1;
+  var today = new Date();
+  today.setDate(today.getDate() + 7);
+  SESSION_DATE = today.toLocaleDateString("es-AR", {day:"2-digit", month:"short", year:"numeric"});
+  CONFIRMED_AGENDA = [];
+  saveSession();
+  updateSessionDisplay();
+  closeModal("agenda-modal");
+  toast("Sesión cerrada. Próxima sesión: #" + SESSION_NUM + " · " + SESSION_DATE, true);
+  saveAgendaToSheet();
+}
+
+function removeAgendaItem(idx){
+  CONFIRMED_AGENDA.splice(idx, 1);
+  saveSession();
+  renderAgendaModal();
+}
+
+function addFreeAgendaItem(){
+  var input = document.getElementById("agenda-free-input");
+  var txt = input ? input.value.trim() : "";
+  if(!txt){ toast("Escribí un tema primero"); return; }
+  CONFIRMED_AGENDA.push({id: null, text: txt, owner: "", signal: null, source: "free", treated: false, confirmed: true});
+  input.value = "";
+  saveSession();
+  renderAgendaModal();
+  toast("Tema agregado", true);
+}
+
+function saveAgendaToSheet(){
+  if(!ASURL) return;
+  var rows = CONFIRMED_AGENDA.map(function(item, idx){
+    return {
+      num: idx + 1,
+      topic: item.text,
+      resp: item.owner || "",
+      signal: item.signal || "",
+      source: item.source || "free",
+      treated: item.treated ? "Si" : "No"
+    };
+  });
+  apiPost({action: "saveAgenda", session: SESSION_NUM, date: SESSION_DATE, items: rows}, function(res){
+    if(res && res.ok) toast("Agenda guardada en Sheet", true);
+  });
+}
 
 function save(){try{localStorage.setItem("si",JSON.stringify(ISSUES));localStorage.setItem("sl",JSON.stringify(LOG));localStorage.setItem("sn",nextId);}catch(e){}document.getElementById("last-update").textContent=new Date().toLocaleTimeString("es-AR",{hour:"2-digit",minute:"2-digit"});}
 function load(){try{var s=localStorage.getItem("si");if(s)ISSUES=JSON.parse(s);var l=localStorage.getItem("sl");if(l)LOG=JSON.parse(l);var n=localStorage.getItem("sn");if(n)nextId=parseInt(n);}catch(e){}}
@@ -299,8 +546,8 @@ function closeModal(id){document.getElementById(id).classList.remove("open");}
 function openSessionLog(){var body=document.getElementById("log-body");body.innerHTML=LOG.length?LOG.map(function(e){return'<div class="log-item"><div class="log-meta">'+esc(e.ts)+'</div><div class="log-text">'+esc(e.text)+'</div></div>';}).join(""):'<div style="color:var(--text3);font-size:13px;padding:16px 0">Sin actividad aun.</div>';document.getElementById("log-modal").classList.add("open");}
 function exportCSV(){var h=["ID","Titulo","Area","Responsable","Estado","Senal","Menciones","Semanas","Registro","Ultimo mov","Accionable","Deadline","Notas","Origen"];var rows=[h].concat(ISSUES.map(function(i){return[i.id,i.title,i.area,i.owner,stKey(i.status),i.signal,i.mentions,i.weeks,i.date_reg,i.date_mov,i.action,i.deadline,i.notes,i.origin].map(function(v){return'"'+(v||"").toString().replace(/"/g,'""')+'"';});}));var a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\uFEFF"+rows.map(function(r){return r.join(",");}).join("\n")],{type:"text/csv;charset=utf-8"}));a.download="SOLU_Board_"+new Date().toISOString().slice(0,10)+".csv";a.click();toast("CSV exportado",true);}
 function toast(msg,ok,err){var t=document.getElementById("toast");t.textContent=msg;t.className="toast"+(ok?" success":err?" error":"")+" show";setTimeout(function(){t.className="toast"+(ok?" success":err?" error":"");},2500);}
-document.addEventListener("keydown",function(e){if(e.key==="Escape")["issue-modal","log-modal"].forEach(function(id){closeModal(id);});});
-load();renderAll();renderAgenda();
+document.addEventListener("keydown",function(e){if(e.key==="Escape")["issue-modal","agenda-modal","log-modal"].forEach(function(id){closeModal(id);});});
+load();loadSession();renderAll();renderAgenda();
 if(ASURL){setSyncStatus("syncing");setTimeout(function(){syncFromSheets();loadTeamFromSheets();},800);}
 </script>
 </body>
