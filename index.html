@@ -294,7 +294,7 @@ var AGENDA=[
 {n:"-",time:"__ min",topic:"",resp:"",critical:[],optional:[]},
 {n:"-",time:"__ min",topic:"",resp:"",critical:[],optional:[]}
 ];
-var LOG=[],nextId=19,areaF="all",sigF=null,editId=null,ASURL="https://script.google.com/macros/s/AKfycbyJj_tPXaTbm54CUcjlrd3LFThqrSi2BFC3gX4AIxyN-gV9o9O_FzBvJuooCuA-YhM/exec";
+var LOG=[],nextId=19,areaF="all",sigF=null,editId=null,ASURL="https://script.google.com/macros/s/AKfycbxwPBBWmeIUCrVenZ4c39X2Ab4fBpyuUycMUW4qNjS3CuxZg43JsYXdo2FCHi7Rj73e/exec";
 var TEAM=["Lucho","Nico Botti","Nico Bucci","Grego","Luis","Andy","Ivan","Alan","Tata","Jose Rivas","Alfonso"];
 function loadTeamFromSheets(){if(!ASURL)return;apiFetch({action:"getTeam"},function(data){if(data&&data.team&&data.team.length>0){TEAM=data.team;try{localStorage.setItem("solu_team",JSON.stringify(TEAM));}catch(e){}};});};
 (function(){try{var t=localStorage.getItem("solu_team");if(t)TEAM=JSON.parse(t);}catch(e){}})();
