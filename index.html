@@ -73,10 +73,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .card-btns{display:flex;gap:4px;flex-wrap:wrap}
 .card-btn{font-size:10px;font-weight:500;padding:3px 8px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:transparent;color:var(--text2);cursor:pointer;transition:all .12s;white-space:nowrap}
 .card-btn:hover{background:var(--bg4);color:var(--text)}.card-btn.close-btn:hover{border-color:var(--hot);color:var(--hot)}.card-btn.del-btn:hover{border-color:var(--red);color:var(--red)}
-.setup-banner{margin:16px 24px 0;background:rgba(123,94,248,.08);border:1px solid rgba(123,94,248,.3);border-radius:var(--radius);padding:12px 16px;display:flex;align-items:flex-start;gap:12px}
-.setup-banner svg{width:16px;height:16px;flex-shrink:0;margin-top:1px}
-.setup-banner-text{font-size:12px;color:var(--text2);line-height:1.6}
-.setup-banner-text strong{color:var(--text)}.setup-banner-text a{color:var(--teal);text-decoration:underline;cursor:pointer}
 .agenda-section{margin:16px 24px 24px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
 .agenda-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border);cursor:pointer}
 .agenda-header-left{display:flex;align-items:center;gap:10px}
@@ -94,9 +90,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .pres-chip{font-size:10px;padding:2px 6px;border-radius:20px;background:var(--bg4);color:var(--text2);border:1px solid var(--border2)}
 .pres-chip.critical{background:rgba(123,94,248,.15);color:#B09AF9;border-color:rgba(123,94,248,.3)}
 .step{display:flex;gap:12px;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border)}.step:last-child{border-bottom:none}
-.step-num{width:24px;height:24px;border-radius:50%;background:var(--violet);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0}
-.step-body{font-size:12px;color:var(--text2);line-height:1.6}.step-body strong{color:var(--text)}
-.step-body code{font-family:'DM Mono',monospace;font-size:11px;background:var(--bg4);padding:1px 5px;border-radius:3px;color:var(--teal)}
 .modal-overlay{display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.75);align-items:center;justify-content:center;padding:20px}
 .modal-overlay.open{display:flex}
 .modal{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:24px;width:100%;max-width:540px;max-height:92vh;overflow-y:auto}
@@ -163,9 +156,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     <input type="text" id="search-input" placeholder="Buscar issue, responsable..." oninput="renderAll()">
   </div>
 </div>
-<div class="setup-banner" id="setup-banner">
-  <svg viewBox="0 0 16 16" fill="none" stroke="var(--violet)" stroke-width="1.5"><circle cx="8" cy="8" r="7"/><path d="M8 5v3l2 2"/></svg>
-  <div class="setup-banner-text"><strong>Modo local activo</strong> — cambios guardados en este navegador. Para sincronización en tiempo real con todo el equipo vía Google Sheets (gratis, sin tarjeta), <a onclick="openSetupModal()">seguí la guía de 5 minutos</a>.</div>
 </div>
 <div class="board">
   <div class="col"><div class="col-head pipeline"><div class="col-head-left"><span class="col-title pipeline">Pipeline</span><span class="col-count" id="cnt-pipeline">0</span></div></div><div class="col-body" id="col-Pipeline"></div></div>
@@ -201,24 +191,7 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
   <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('issue-modal')">Cancelar</button><button class="btn btn-primary" onclick="saveIssue()">Guardar</button></div>
 </div>
 </div>
-<!-- setup modal -->
-<div class="modal-overlay" id="setup-modal">
-<div class="modal" style="max-width:560px">
-  <div class="modal-title"><span>Conectar Google Sheets</span><button class="modal-close" onclick="closeModal('setup-modal')">x</button></div>
-  <div style="font-size:12px;color:var(--text2);margin-bottom:14px;background:var(--bg4);border-radius:var(--radius-sm);padding:8px 12px">Gratis · Sin tarjeta · Sin Google Cloud · Solo cuenta Google normal</div>
-  <div class="step"><div class="step-num">1</div><div class="step-body">Subir el archivo <strong>SOLU_Process_Board.xlsx</strong> a Google Drive y abrirlo en Google Sheets (o importar desde sheets.new)</div></div>
-  <div class="step"><div class="step-num">2</div><div class="step-body">En el menu: <code>Extensiones</code> → <code>Apps Script</code></div></div>
-  <div class="step"><div class="step-num">3</div><div class="step-body">Borrar todo el codigo y pegar el contenido del archivo <strong>Code.gs</strong> que viene junto con este HTML. Guardar con Ctrl+S.</div></div>
-  <div class="step"><div class="step-num">4</div><div class="step-body"><code>Implementar</code> → <code>Nueva implementacion</code> → Tipo: <strong>Aplicacion web</strong> → Acceso: <strong>Cualquier usuario</strong> → <code>Implementar</code></div></div>
-  <div class="step"><div class="step-num">5</div><div class="step-body">Google pide autorizacion (es tu propia cuenta). Aceptar. Copiar la <strong>URL de implementacion</strong> que aparece.</div></div>
-  <div class="step"><div class="step-num">6</div><div class="step-body">Pegar esa URL abajo y hacer click en Conectar. Listo: el board lee y escribe en el Sheet en tiempo real.</div></div>
-  <div style="margin-top:16px">
-    <label class="form-label" style="margin-bottom:6px;display:block">URL de implementacion (Apps Script)</label>
-    <input class="form-input" id="apps-script-url" placeholder="https://script.google.com/macros/s/AKfy.../exec" style="margin-bottom:0">
-  </div>
-  <div class="modal-footer"><button class="btn btn-ghost" onclick="closeModal('setup-modal')">Ahora no</button><button class="btn btn-teal" onclick="connectAppsScript()">Conectar</button></div>
-</div>
-</div>
+
 <!-- log modal -->
 <div class="modal-overlay" id="log-modal">
 <div class="modal"><div class="modal-title"><span>Historial de actividad</span><button class="modal-close" onclick="closeModal('log-modal')">x</button></div><div id="log-body" style="max-height:400px;overflow-y:auto"></div></div>
@@ -254,7 +227,7 @@ var AGENDA=[
 {n:"-",time:"__ min",topic:"",resp:"",critical:[],optional:[]},
 {n:"-",time:"__ min",topic:"",resp:"",critical:[],optional:[]}
 ];
-var LOG=[],nextId=19,areaF="all",sigF=null,editId=null,ASURL=null;
+var LOG=[],nextId=19,areaF="all",sigF=null,editId=null,ASURL="https://script.google.com/macros/s/AKfycbyJj_tPXaTbm54CUcjlrd3LFThqrSi2BFC3gX4AIxyN-gV9o9O_FzBvJuooCuA-YhM/exec";
 var TEAM=["Lucho","Nico Botti","Nico Bucci","Grego","Luis","Andy","Ivan","Alan","Tata","Jose Rivas","Alfonso"];
 function loadTeamFromSheets(){if(!ASURL)return;apiFetch({action:"getTeam"},function(data){if(data&&data.team&&data.team.length>0){TEAM=data.team;try{localStorage.setItem("solu_team",JSON.stringify(TEAM));}catch(e){}};});};
 (function(){try{var t=localStorage.getItem("solu_team");if(t)TEAM=JSON.parse(t);}catch(e){}})();
@@ -262,7 +235,7 @@ function buildOwnerField(){var sel='<select class="form-select" id="f-owner" sty
 function syncOwner(v){try{document.getElementById('f-owner').value=v;}catch(e){}}
 
 function save(){try{localStorage.setItem("si",JSON.stringify(ISSUES));localStorage.setItem("sl",JSON.stringify(LOG));localStorage.setItem("sn",nextId);}catch(e){}document.getElementById("last-update").textContent=new Date().toLocaleTimeString("es-AR",{hour:"2-digit",minute:"2-digit"});}
-function load(){try{var s=localStorage.getItem("si");if(s)ISSUES=JSON.parse(s);var l=localStorage.getItem("sl");if(l)LOG=JSON.parse(l);var n=localStorage.getItem("sn");if(n)nextId=parseInt(n);var u=localStorage.getItem("sasu");if(u)ASURL=u;}catch(e){}}
+function load(){try{var s=localStorage.getItem("si");if(s)ISSUES=JSON.parse(s);var l=localStorage.getItem("sl");if(l)LOG=JSON.parse(l);var n=localStorage.getItem("sn");if(n)nextId=parseInt(n);}catch(e){}}
 function setSyncStatus(st){var d=document.getElementById("sync-dot"),l=document.getElementById("sync-label");if(st==="live"){d.className="sync-dot live";l.textContent="Sheets live";}else if(st==="syncing"){d.className="sync-dot syncing";l.textContent="Sincronizando...";}else{d.className="sync-dot";l.textContent="Local";}}
 function apiFetch(p,cb){if(!ASURL){cb&&cb(null);return;}setSyncStatus("syncing");var url=ASURL+"?"+Object.keys(p).map(function(k){return k+"="+encodeURIComponent(p[k]);}).join("&");fetch(url).then(function(r){return r.json();}).then(function(d){setSyncStatus("live");cb&&cb(d);}).catch(function(){setSyncStatus("live");cb&&cb(null);});}
 function apiPost(b,cb){if(!ASURL){cb&&cb(null);return;}setSyncStatus("syncing");fetch(ASURL,{method:"POST",body:JSON.stringify(b)}).then(function(r){return r.json();}).then(function(d){setSyncStatus("live");cb&&cb(d);}).catch(function(){setSyncStatus("live");cb&&cb(null);});}
@@ -273,7 +246,7 @@ function normalizeStatus(s){
   if(v==="cerrado"||v==="closed")return"Cerrado";
   return"pipe";
 }
-function syncFromSheets(){apiFetch({action:"getAll"},function(data){if(data&&data.issues&&data.issues.length>0){ISSUES=data.issues.map(function(i){i.status=normalizeStatus(i.status);return i;});var ids=ISSUES.map(function(i){return parseInt(i.id)||0;});nextId=Math.max.apply(null,ids)+1;save();renderAll();document.getElementById("setup-banner").style.display="none";setSyncStatus("live");toast("Sincronizado: "+ISSUES.length+" issues",true);}else if(data){document.getElementById("setup-banner").style.display="none";setSyncStatus("live");}});}
+function syncFromSheets(){apiFetch({action:"getAll"},function(data){if(data&&data.issues&&data.issues.length>0){ISSUES=data.issues.map(function(i){i.status=normalizeStatus(i.status);return i;});var ids=ISSUES.map(function(i){return parseInt(i.id)||0;});nextId=Math.max.apply(null,ids)+1;save();renderAll();setSyncStatus("live");toast("Sincronizado: "+ISSUES.length+" issues",true);}else if(data){setSyncStatus("live");}});}
 function esc(s){return String(s||"").replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");}
 function stKey(s){if(!s)return"Pipeline";var v=s.toString().toLowerCase().trim();if(v==="exec"||v==="en ejecucion"||v==="en ejecución")return"exec";if(v==="cerrado"||v==="closed")return"Cerrado";return"Pipeline";}
 function sigCls(s){return s==="Hot"?"signal-hot":s==="Ganando fuerza"?"signal-gaining":s==="Olvidado"?"signal-forgotten":"";}
@@ -322,14 +295,14 @@ function openAdd(){editId=null;document.getElementById("modal-title-text").textC
 function openEdit(id){var i=ISSUES.find(function(x){return x.id==id;});if(!i)return;editId=id;document.getElementById("modal-title-text").textContent="Editar #"+id;document.getElementById("f-title").value=i.title;document.getElementById("f-area").value=i.area;document.getElementById("f-owner").value=i.owner;var sm=stKey(i.status);document.getElementById("f-status").value=sm==="exec"?"En Ejecucion":sm==="Cerrado"?"Cerrado":"Pipeline";document.getElementById("owner-field-wrap").innerHTML=buildOwnerField();var ownerSel=document.getElementById("f-owner");if(ownerSel)ownerSel.value=TEAM.indexOf(i.owner)>-1?i.owner:"";var ownerCust=document.getElementById("f-owner-custom");if(ownerCust)ownerCust.value=TEAM.indexOf(i.owner)===-1?i.owner:"";document.getElementById("f-signal").value=i.signal;document.getElementById("f-deadline").value=i.deadline||"";document.getElementById("f-mentions").value=i.mentions||1;document.getElementById("f-action").value=i.action||"";document.getElementById("f-notes").value=i.notes||"";document.getElementById("f-origin").value=i.origin||"";document.getElementById("issue-modal").classList.add("open");}
 function saveIssue(){var t=document.getElementById("f-title").value.trim();if(!t){toast("Titulo obligatorio");return;}var sv=document.getElementById("f-status").value;var stv=sv==="En Ejecucion"?"exec":sv==="Cerrado"?"Cerrado":"pipe";var stvSheet=sv==="En Ejecucion"?"En Ejecucion":sv==="Cerrado"?"Cerrado":"Pipeline";var data={title:t,area:document.getElementById("f-area").value,owner:(function(){var sel=document.getElementById("f-owner");var cust=document.getElementById("f-owner-custom");return(cust&&cust.value.trim())?cust.value.trim():(sel?sel.value:"");}()),  status:stv,signal:document.getElementById("f-signal").value,deadline:document.getElementById("f-deadline").value,mentions:parseInt(document.getElementById("f-mentions").value)||1,action:document.getElementById("f-action").value,notes:document.getElementById("f-notes").value,origin:document.getElementById("f-origin").value,weeks:0};if(editId){var i=ISSUES.find(function(x){return x.id==editId;});if(i)Object.assign(i,data);LOG.unshift({ts:new Date().toLocaleString("es-AR"),text:"Editado #"+editId+": "+t});apiPost({action:"saveIssue",issue:Object.assign({id:editId},data,{status:stvSheet})},null);toast("Actualizado",true);}else{data.id=nextId++;data.date_reg=new Date().toLocaleDateString("es-AR");data.date_mov="";ISSUES.push(data);LOG.unshift({ts:new Date().toLocaleString("es-AR"),text:"Nuevo #"+data.id+": "+t});apiPost({action:"addIssue",issue:Object.assign({},data,{status:stvSheet})},null);toast("Agregado",true);}closeModal("issue-modal");save();renderAll();}
 function closeModal(id){document.getElementById(id).classList.remove("open");}
-function openSetupModal(){document.getElementById("setup-modal").classList.add("open");}
-function connectAppsScript(){var url=document.getElementById("apps-script-url").value.trim();if(!url||url.indexOf("script.google.com")<0){toast("URL invalida");return;}ASURL=url;try{localStorage.setItem("sasu",url);}catch(e){}closeModal("setup-modal");document.getElementById("setup-banner").style.display="none";setSyncStatus("syncing");syncFromSheets();loadTeamFromSheets();}
+
+
 function openSessionLog(){var body=document.getElementById("log-body");body.innerHTML=LOG.length?LOG.map(function(e){return'<div class="log-item"><div class="log-meta">'+esc(e.ts)+'</div><div class="log-text">'+esc(e.text)+'</div></div>';}).join(""):'<div style="color:var(--text3);font-size:13px;padding:16px 0">Sin actividad aun.</div>';document.getElementById("log-modal").classList.add("open");}
 function exportCSV(){var h=["ID","Titulo","Area","Responsable","Estado","Senal","Menciones","Semanas","Registro","Ultimo mov","Accionable","Deadline","Notas","Origen"];var rows=[h].concat(ISSUES.map(function(i){return[i.id,i.title,i.area,i.owner,stKey(i.status),i.signal,i.mentions,i.weeks,i.date_reg,i.date_mov,i.action,i.deadline,i.notes,i.origin].map(function(v){return'"'+(v||"").toString().replace(/"/g,'""')+'"';});}));var a=document.createElement("a");a.href=URL.createObjectURL(new Blob(["\uFEFF"+rows.map(function(r){return r.join(",");}).join("\n")],{type:"text/csv;charset=utf-8"}));a.download="SOLU_Board_"+new Date().toISOString().slice(0,10)+".csv";a.click();toast("CSV exportado",true);}
 function toast(msg,ok,err){var t=document.getElementById("toast");t.textContent=msg;t.className="toast"+(ok?" success":err?" error":"")+" show";setTimeout(function(){t.className="toast"+(ok?" success":err?" error":"");},2500);}
-document.addEventListener("keydown",function(e){if(e.key==="Escape")["issue-modal","setup-modal","log-modal"].forEach(function(id){closeModal(id);});});
+document.addEventListener("keydown",function(e){if(e.key==="Escape")["issue-modal","log-modal"].forEach(function(id){closeModal(id);});});
 load();renderAll();renderAgenda();
-if(ASURL){document.getElementById("setup-banner").style.display="none";setSyncStatus("syncing");setTimeout(function(){syncFromSheets();loadTeamFromSheets();},800);}
+if(ASURL){setSyncStatus("syncing");setTimeout(function(){syncFromSheets();loadTeamFromSheets();},800);}
 </script>
 </body>
 </html>
